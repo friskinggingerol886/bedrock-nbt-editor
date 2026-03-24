@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bedrock NBT Editor — Online Level.dat Editor for PocketMine-MP & MCPE</title>
+<meta name="description" content="Free online NBT editor for Minecraft Bedrock Edition level.dat files. Edit LevelName, game rules, and all NBT tags directly in your browser. Built for PocketMine-MP (PMMP) and MCPE/MCBE.">
+<meta name="keywords" content="PocketMine, PMMP, PocketMine-MP, Bedrock Edition, MCPE, MCBE, level.dat, NBT editor, world editor, level name, Minecraft Bedrock tools, NBT viewer, online NBT editor, NBT parser">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://w1zardz.github.io/bedrock-nbt-editor/">
+<link rel="alternate" hreflang="en" href="https://w1zardz.github.io/bedrock-nbt-editor/">
+<link rel="alternate" hreflang="ru" href="https://w1zardz.github.io/bedrock-nbt-editor/">
+<link rel="alternate" hreflang="x-default" href="https://w1zardz.github.io/bedrock-nbt-editor/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bedrock NBT Editor — Online Level.dat Editor">
+<meta property="og:description" content="Edit Minecraft Bedrock level.dat NBT tags online. Fix LevelName after duplicating worlds. Works with PocketMine-MP.">
+<meta property="og:url" content="https://w1zardz.github.io/bedrock-nbt-editor/">
+<meta property="og:site_name" content="Bedrock NBT Editor">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bedrock NBT Editor — Online Level.dat Editor">
+<meta name="twitter:description" content="Edit Minecraft Bedrock level.dat NBT tags online. Fix LevelName after duplicating worlds. Works with PocketMine-MP.">
+<meta name="theme-color" content="#0d1117">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Bedrock NBT Editor",
+  "description": "Online NBT editor for Minecraft Bedrock Edition level.dat files. Edit LevelName and all NBT tags in the browser.",
+  "url": "https://w1zardz.github.io/bedrock-nbt-editor/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires a modern browser with BigInt support",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "keywords": "NBT editor, level.dat, PocketMine-MP, Bedrock Edition, MCPE"
+}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;
+--text:#e6edf3;--text2:#8b949e;--accent:#58a6ff;--accent2:#1f6feb;
+--red:#f85149;--green:#3fb950;--orange:#d29922;--purple:#bc8cff;
+--pink:#f778ba;--cyan:#39d2c0;--yellow:#e3b341;
+--safe-top:env(safe-area-inset-top,0px);
+--safe-bottom:env(safe-area-inset-bottom,0px);
+--safe-left:env(safe-area-inset-left,0px);
+--safe-right:env(safe-area-inset-right,0px);
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+line-height:1.6;min-height:100vh;min-height:100dvh;
+padding-top:var(--safe-top);padding-left:var(--safe-left);padding-right:var(--safe-right);
+overflow-x:hidden;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:960px;margin:0 auto;padding:0 16px}
+/* Header */
+header.site-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:0;z-index:100;
+  padding-top:calc(var(--safe-top) + 16px);
+}
+header .container{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:1.25rem;font-weight:700;white-space:nowrap}
+header h1 span{color:var(--accent)}
+header .badge{font-size:0.7rem;background:var(--accent2);color:#fff;padding:2px 8px;border-radius:12px;white-space:nowrap}
+/* Hero */
+.hero{text-align:center;padding:40px 16px 32px}
+.hero h2{font-size:1.5rem;margin-bottom:12px;font-weight:700}
+.hero p{color:var(--text2);max-width:600px;margin:0 auto;font-size:1rem}
+/* Drop zone */
+.dropzone{
+  border:2px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;
+  cursor:pointer;transition:border-color .2s,background .2s;margin:0 16px 24px;max-width:928px;margin-left:auto;margin-right:auto;
+  min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  -webkit-user-select:none;user-select:none;
+}
+.dropzone.active{border-color:var(--accent);background:rgba(88,166,255,.06)}
+.dropzone svg{width:48px;height:48px;color:var(--text2)}
+.dropzone p{color:var(--text2);font-size:1rem}
+.dropzone .btn-pick{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--accent2);color:#fff;border:none;border-radius:8px;
+  padding:12px 24px;font-size:1rem;cursor:pointer;min-height:44px;
+  font-weight:600;
+}
+.dropzone .btn-pick:active{opacity:.8}
+#fileInput{display:none}
+/* Editor area */
+#editorArea{display:none;padding:0 16px 120px;max-width:960px;margin:0 auto}
+#editorArea.visible{display:block}
+.file-info{
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;
+  margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:.9rem;
+}
+.file-info .fname{font-weight:600;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace}
+.file-info .fmeta{color:var(--text2)}
+/* Tree */
+.tree{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.tree-node{border-bottom:1px solid var(--border)}
+.tree-node:last-child{border-bottom:none}
+.node-row{
+  display:flex;align-items:center;gap:6px;padding:6px 12px;min-height:44px;
+  cursor:default;flex-wrap:nowrap;
+}
+.node-row:active{background:var(--bg3)}
+.node-toggle{
+  width:28px;height:28px;min-width:28px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border-radius:4px;font-size:.8rem;color:var(--text2);
+  border:none;background:none;-webkit-tap-highlight-color:transparent;
+}
+.node-toggle:hover{background:var(--bg3)}
+.node-toggle.leaf{visibility:hidden}
+.tag-badge{
+  font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;
+  text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;
+}
+.tag-badge[data-t="1"]{background:#2d333b;color:var(--green)}
+.tag-badge[data-t="2"]{background:#2d333b;color:var(--cyan)}
+.tag-badge[data-t="3"]{background:#2d333b;color:var(--accent)}
+.tag-badge[data-t="4"]{background:#2d333b;color:var(--purple)}
+.tag-badge[data-t="5"]{background:#2d333b;color:var(--orange)}
+.tag-badge[data-t="6"]{background:#2d333b;color:var(--yellow)}
+.tag-badge[data-t="7"]{background:#2d333b;color:var(--pink)}
+.tag-badge[data-t="8"]{background:#2d333b;color:var(--green)}
+.tag-badge[data-t="9"]{background:#2d333b;color:var(--red)}
+.tag-badge[data-t="10"]{background:#2d333b;color:var(--accent)}
+.tag-badge[data-t="11"]{background:#2d333b;color:var(--pink)}
+.tag-badge[data-t="12"]{background:#2d333b;color:var(--purple)}
+.node-name{font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:1;min-width:0}
+.node-value{
+  font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+  font-size:.85rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  flex:1;min-width:0;cursor:pointer;padding:4px 8px;border-radius:4px;min-height:32px;
+  display:flex;align-items:center;
+}
+.node-value:hover{background:var(--bg3)}
+.node-value.editing{background:var(--bg);border:1px solid var(--accent);cursor:text}
+.node-value input,.node-value textarea{
+  background:transparent;border:none;color:var(--text);font:inherit;width:100%;outline:none;
+  font-size:1rem;padding:0;
+}
+.node-value textarea{resize:vertical;min-height:60px}
+.node-children{display:none;padding-left:16px}
+.node-children.open{display:block}
+.node-actions{display:flex;gap:4px;flex-shrink:0;margin-left:auto}
+.node-actions button{
+  width:32px;height:32px;min-width:32px;border:none;background:var(--bg3);color:var(--text2);
+  border-radius:4px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.node-actions button:hover{background:var(--border);color:var(--text)}
+.node-actions button.del:hover{color:var(--red)}
+/* Bottom bar */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);
+  padding:12px 16px;padding-bottom:calc(12px + var(--safe-bottom));
+  display:none;gap:8px;justify-content:center;flex-wrap:wrap;z-index:100;
+}
+.bottom-bar.visible{display:flex}
+.bottom-bar button{
+  min-height:44px;padding:10px 20px;border:none;border-radius:8px;font-size:1rem;font-weight:600;
+  cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-save{background:var(--green);color:#0d1117}
+.btn-save:active{opacity:.8}
+.btn-add{background:var(--accent2);color:#fff}
+.btn-add:active{opacity:.8}
+.btn-close{background:var(--bg3);color:var(--text)}
+.btn-close:active{opacity:.8}
+/* Toast */
+.toast-container{position:fixed;top:calc(var(--safe-top) + 70px);right:16px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;
+  font-size:.9rem;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:320px;
+  animation:toastIn .25s ease;
+}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--accent)}
+@keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+/* Modal */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:none;align-items:center;justify-content:center;padding:16px;
+}
+.modal-overlay.visible{display:flex}
+.modal{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;
+  width:100%;max-width:400px;max-height:80vh;overflow-y:auto;
+}
+.modal h3{font-size:1.1rem;margin-bottom:16px}
+.modal label{display:block;font-size:.9rem;color:var(--text2);margin-bottom:4px;margin-top:12px}
+.modal input,.modal select{
+  width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-size:1rem;min-height:44px;
+}
+.modal select{appearance:auto}
+.modal .modal-btns{display:flex;gap:8px;margin-top:20px}
+.modal .modal-btns button{
+  flex:1;min-height:44px;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;
+}
+.modal .btn-confirm{background:var(--accent2);color:#fff}
+.modal .btn-cancel{background:var(--bg3);color:var(--text)}
+/* Content sections */
+section.content{padding:32px 16px;max-width:960px;margin:0 auto}
+section.content h2{font-size:1.3rem;margin-bottom:16px;font-weight:700}
+section.content h3{font-size:1.1rem;margin:16px 0 8px;color:var(--accent)}
+section.content p,section.content li{color:var(--text2);margin-bottom:8px;font-size:.95rem}
+section.content ul,section.content ol{padding-left:20px}
+section.content code{background:var(--bg3);padding:2px 6px;border-radius:4px;font-size:.85rem;font-family:'SFMono-Regular',Consolas,monospace}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:16px}
+.steps{counter-reset:step}
+.steps li{counter-increment:step;list-style:none;padding-left:36px;position:relative;margin-bottom:12px}
+.steps li::before{
+  content:counter(step);position:absolute;left:0;top:0;width:28px;height:28px;
+  background:var(--accent2);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:700;
+}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:12px}
+.feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px}
+.feature-card h3{font-size:.95rem;margin:0 0 6px;color:var(--text)}
+.feature-card p{font-size:.85rem;color:var(--text2);margin:0}
+/* FAQ accordion */
+details{background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+details summary{
+  padding:14px 16px;cursor:pointer;font-weight:600;font-size:.95rem;min-height:44px;
+  display:flex;align-items:center;list-style:none;-webkit-user-select:none;user-select:none;
+}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▶";margin-right:10px;font-size:.7rem;color:var(--text2);transition:transform .2s}
+details[open] summary::before{transform:rotate(90deg)}
+details .faq-body{padding:0 16px 14px;color:var(--text2);font-size:.9rem}
+/* Footer */
+footer.site-footer{
+  border-top:1px solid var(--border);padding:24px 16px;text-align:center;color:var(--text2);font-size:.85rem;
+  padding-bottom:calc(24px + var(--safe-bottom));
+}
+footer a{color:var(--accent)}
+#contentSections{display:block}
+#contentSections.hidden{display:none}
+/* Scrollbar */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+@media(max-width:480px){
+  .hero h2{font-size:1.25rem}
+  .node-row{padding:6px 8px;gap:4px}
+  .node-children{padding-left:10px}
+  .node-name{font-size:.82rem}
+  .node-value{font-size:.8rem;padding:4px 6px}
+  .tag-badge{font-size:.6rem;padding:1px 4px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+<div class="container">
+<h1><span>Bedrock</span> NBT Editor</h1>
+<span class="badge">PocketMine-MP</span>
+</div>
+</header>
+
+<main>
+
+<section class="hero" aria-label="Introduction">
+<div class="container">
+<h2>Edit Bedrock level.dat Online</h2>
+<p>Open your Minecraft Bedrock <code>level.dat</code> file, edit any NBT tag, and download the result. Works with PocketMine-MP, MCPE, and MCBE worlds. Everything runs in your browser — no upload needed.</p>
+</div>
+</section>
+
+<div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Drop a level.dat file here or click to browse">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V4m0 0L8 8m4-4l4 4"/><path d="M20 16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2"/></svg>
+<p>Drop <strong>level.dat</strong> here</p>
+<button class="btn-pick" type="button" onclick="document.getElementById('fileInput').click()">Choose File</button>
+<input type="file" id="fileInput" accept=".dat">
+</div>
+
+<div id="editorArea">
+<div class="file-info" id="fileInfo"></div>
+<div class="tree" id="treeRoot"></div>
+</div>
+
+<div class="bottom-bar" id="bottomBar">
+<button class="btn-add" id="btnAddRoot" type="button">+ Add Tag</button>
+<button class="btn-save" id="btnSave" type="button">Save &amp; Download</button>
+<button class="btn-close" id="btnCloseFile" type="button">Close</button>
+</div>
+
+<div id="contentSections">
+
+<section class="content" aria-label="How to Use">
+<h2>How to Use</h2>
+<div class="card">
+<ol class="steps">
+<li>Find your world's <code>level.dat</code> file. On a PocketMine-MP server it's in <code>worlds/YourWorld/level.dat</code>. On mobile (MCPE) it's in <code>games/com.mojang/minecraftWorlds/&lt;id&gt;/level.dat</code>.</li>
+<li>Drag the file onto the editor above, or tap <strong>Choose File</strong>.</li>
+<li>Expand the NBT tree. Click any value to edit it. For example, change <code>LevelName</code> to rename the world.</li>
+<li>Use the <strong>+</strong> button to add new tags or the <strong>&times;</strong> button to remove them.</li>
+<li>Tap <strong>Save &amp; Download</strong> to get the modified <code>level.dat</code>.</li>
+<li>Replace the original file with the downloaded one and restart your server or game.</li>
+</ol>
+</div>
+</section>
+
+<section class="content" aria-label="Why You Need This">
+<h2>Why You Need This</h2>
+<div class="card">
+<p>A common issue in PocketMine-MP and Bedrock Edition: when you duplicate a world folder, the <strong>LevelName</strong> tag inside <code>level.dat</code> still contains the original world name. This causes:</p>
+<ul>
+<li>Multiple worlds showing the same name in server listings</li>
+<li>Confusion when managing worlds in PocketMine-MP console</li>
+<li>Potential data corruption if plugins reference worlds by their internal name</li>
+<li>Players seeing the wrong world name on join</li>
+</ul>
+<p>This editor lets you quickly fix the <code>LevelName</code> and edit any other NBT tag — game mode, spawn coordinates, game rules, and more — without installing any software.</p>
+</div>
+</section>
+
+<section class="content" aria-label="Supported Features">
+<h2>Supported Features</h2>
+<div class="features-grid">
+<article class="feature-card"><h3>All 13 Tag Types</h3><p>Full support for every NBT tag type from TAG_End to TAG_Long_Array, including 64-bit BigInt precision for TAG_Long.</p></article>
+<article class="feature-card"><h3>Bedrock Format</h3><p>Correctly handles the 8-byte little-endian header unique to Bedrock level.dat files.</p></article>
+<article class="feature-card"><h3>Tree View Editor</h3><p>Collapsible tree with type badges. Tap to expand compounds and lists, tap values to edit inline.</p></article>
+<article class="feature-card"><h3>Add &amp; Remove Tags</h3><p>Add new tags to any compound or list. Remove tags you don't need. Full structural editing.</p></article>
+<article class="feature-card"><h3>Mobile Optimized</h3><p>44px+ tap targets, bottom action bar, touch-friendly. Works great on phones and tablets.</p></article>
+<article class="feature-card"><h3>100% Client-Side</h3><p>Your files never leave your device. All parsing and editing happens in the browser with JavaScript.</p></article>
+</div>
+</section>
+
+<section class="content" aria-label="FAQ">
+<h2>Frequently Asked Questions</h2>
+
+<details>
+<summary>What is NBT?</summary>
+<div class="faq-body"><p>NBT (Named Binary Tag) is the data format Minecraft uses to store world data, player data, and more. It's a tree structure of typed, named tags. Bedrock Edition uses little-endian byte order, while Java Edition uses big-endian.</p></div>
+</details>
+
+<details>
+<summary>What is level.dat?</summary>
+<div class="faq-body"><p><code>level.dat</code> is the main metadata file for a Minecraft world. It contains the world name, game mode, spawn position, game rules, difficulty, and many other settings. In Bedrock Edition, it starts with an 8-byte header followed by NBT data.</p></div>
+</details>
+
+<details>
+<summary>Does this work with PocketMine-MP?</summary>
+<div class="faq-body"><p>Yes. PocketMine-MP uses Bedrock Edition world format. This editor reads and writes the exact same <code>level.dat</code> format that PocketMine-MP expects.</p></div>
+</details>
+
+<details>
+<summary>Is my file uploaded to a server?</summary>
+<div class="faq-body"><p>No. Everything runs locally in your browser using JavaScript. Your file is read with the FileReader API and never sent anywhere.</p></div>
+</details>
+
+<details>
+<summary>Can I edit level.dat from Minecraft Java Edition?</summary>
+<div class="faq-body"><p>No. Java Edition uses big-endian NBT with gzip compression and a different header format. This editor is specifically built for Bedrock Edition (little-endian, 8-byte header).</p></div>
+</details>
+
+<details>
+<summary>What if I break my level.dat?</summary>
+<div class="faq-body"><p>Always keep a backup of your original file before editing. If something goes wrong, you can restore the backup. The editor doesn't modify your original file — it creates a new download.</p></div>
+</details>
+
+<details>
+<summary>Can I use this on mobile?</summary>
+<div class="faq-body"><p>Yes. The editor is designed mobile-first with large tap targets, a bottom action bar, and responsive layout. On Android you can access your world files via a file manager. On iOS it's more limited due to sandboxing.</p></div>
+</details>
+</section>
+
+</div>
+
+</main>
+
+<footer class="site-footer">
+<p>Bedrock NBT Editor &mdash; Open source on <a href="https://github.com/w1zardz/bedrock-nbt-editor" target="_blank" rel="noopener">GitHub</a>. Made for the PocketMine-MP community.</p>
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="modal-overlay" id="addTagModal">
+<div class="modal">
+<h3>Add New Tag</h3>
+<label for="newTagName">Tag Name</label>
+<input type="text" id="newTagName" placeholder="e.g. MyTag" autocomplete="off">
+<label for="newTagType">Tag Type</label>
+<select id="newTagType">
+<option value="1">TAG_Byte</option>
+<option value="2">TAG_Short</option>
+<option value="3">TAG_Int</option>
+<option value="4">TAG_Long</option>
+<option value="5">TAG_Float</option>
+<option value="6">TAG_Double</option>
+<option value="7">TAG_Byte_Array</option>
+<option value="8" selected>TAG_String</option>
+<option value="9">TAG_List</option>
+<option value="10">TAG_Compound</option>
+<option value="11">TAG_Int_Array</option>
+<option value="12">TAG_Long_Array</option>
+</select>
+<label for="newTagValue">Value</label>
+<input type="text" id="newTagValue" placeholder="Value" autocomplete="off">
+<div id="listSubtypeRow" style="display:none">
+<label for="newListSubtype">List Element Type</label>
+<select id="newListSubtype">
+<option value="1">TAG_Byte</option>
+<option value="2">TAG_Short</option>
+<option value="3">TAG_Int</option>
+<option value="4">TAG_Long</option>
+<option value="5">TAG_Float</option>
+<option value="6">TAG_Double</option>
+<option value="8">TAG_String</option>
+<option value="10">TAG_Compound</option>
+</select>
+</div>
+<div class="modal-btns">
+<button class="btn-cancel" type="button" id="addTagCancel">Cancel</button>
+<button class="btn-confirm" type="button" id="addTagConfirm">Add</button>
+</div>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===== TAG CONSTANTS ===== */
+const TAG={END:0,BYTE:1,SHORT:2,INT:3,LONG:4,FLOAT:5,DOUBLE:6,BYTE_ARRAY:7,STRING:8,LIST:9,COMPOUND:10,INT_ARRAY:11,LONG_ARRAY:12};
+const TAG_NAMES={0:"End",1:"Byte",2:"Short",3:"Int",4:"Long",5:"Float",6:"Double",7:"Byte[]",8:"String",9:"List",10:"Compound",11:"Int[]",12:"Long[]"};
+
+/* ===== NBT READER (Little-Endian) ===== */
+class NBTReader{
+  constructor(buffer){
+    this.view=new DataView(buffer);
+    this.offset=0;
+    this.buf=new Uint8Array(buffer);
+  }
+  readByte(){const v=this.view.getInt8(this.offset);this.offset+=1;return v}
+  readUByte(){const v=this.view.getUint8(this.offset);this.offset+=1;return v}
+  readShort(){const v=this.view.getInt16(this.offset,true);this.offset+=2;return v}
+  readUShort(){const v=this.view.getUint16(this.offset,true);this.offset+=2;return v}
+  readInt(){const v=this.view.getInt32(this.offset,true);this.offset+=4;return v}
+  readLong(){const v=this.view.getBigInt64(this.offset,true);this.offset+=8;return v}
+  readFloat(){const v=this.view.getFloat32(this.offset,true);this.offset+=4;return v}
+  readDouble(){const v=this.view.getFloat64(this.offset,true);this.offset+=8;return v}
+  readString(){
+    const len=this.readUShort();
+    const bytes=this.buf.slice(this.offset,this.offset+len);
+    this.offset+=len;
+    return new TextDecoder().decode(bytes);
+  }
+  readTag(tagType){
+    switch(tagType){
+      case TAG.BYTE:return{type:TAG.BYTE,value:this.readByte()};
+      case TAG.SHORT:return{type:TAG.SHORT,value:this.readShort()};
+      case TAG.INT:return{type:TAG.INT,value:this.readInt()};
+      case TAG.LONG:return{type:TAG.LONG,value:this.readLong()};
+      case TAG.FLOAT:return{type:TAG.FLOAT,value:this.readFloat()};
+      case TAG.DOUBLE:return{type:TAG.DOUBLE,value:this.readDouble()};
+      case TAG.BYTE_ARRAY:{
+        const len=this.readInt();
+        const arr=[];
+        for(let i=0;i<len;i++)arr.push(this.readByte());
+        return{type:TAG.BYTE_ARRAY,value:arr};
+      }
+      case TAG.STRING:return{type:TAG.STRING,value:this.readString()};
+      case TAG.LIST:{
+        const listType=this.readUByte();
+        const len=this.readInt();
+        const items=[];
+        for(let i=0;i<len;i++){
+          const item=this.readTag(listType);
+          items.push(item);
+        }
+        return{type:TAG.LIST,listType,value:items};
+      }
+      case TAG.COMPOUND:{
+        const entries=[];
+        while(true){
+          const t=this.readUByte();
+          if(t===TAG.END)break;
+          const name=this.readString();
+          const tag=this.readTag(t);
+          tag.name=name;
+          entries.push(tag);
+        }
+        return{type:TAG.COMPOUND,value:entries};
+      }
+      case TAG.INT_ARRAY:{
+        const len=this.readInt();
+        const arr=[];
+        for(let i=0;i<len;i++)arr.push(this.readInt());
+        return{type:TAG.INT_ARRAY,value:arr};
+      }
+      case TAG.LONG_ARRAY:{
+        const len=this.readInt();
+        const arr=[];
+        for(let i=0;i<len;i++)arr.push(this.readLong());
+        return{type:TAG.LONG_ARRAY,value:arr};
+      }
+      default:throw new Error("Unknown tag type: "+tagType);
+    }
+  }
+  parse(){
+    const rootType=this.readUByte();
+    if(rootType!==TAG.COMPOUND)throw new Error("Root tag must be TAG_Compound, got "+rootType);
+    const rootName=this.readString();
+    const root=this.readTag(TAG.COMPOUND);
+    root.name=rootName;
+    return root;
+  }
+}
+
+/* ===== NBT WRITER (Little-Endian) ===== */
+class NBTWriter{
+  constructor(){this.parts=[];this.size=0}
+  writeByte(v){const b=new Uint8Array(1);new DataView(b.buffer).setInt8(0,v);this.parts.push(b);this.size+=1}
+  writeUByte(v){const b=new Uint8Array(1);b[0]=v&0xff;this.parts.push(b);this.size+=1}
+  writeShort(v){const b=new Uint8Array(2);new DataView(b.buffer).setInt16(0,v,true);this.parts.push(b);this.size+=2}
+  writeUShort(v){const b=new Uint8Array(2);new DataView(b.buffer).setUint16(0,v,true);this.parts.push(b);this.size+=2}
+  writeInt(v){const b=new Uint8Array(4);new DataView(b.buffer).setInt32(0,v,true);this.parts.push(b);this.size+=4}
+  writeLong(v){const b=new Uint8Array(8);new DataView(b.buffer).setBigInt64(0,BigInt(v),true);this.parts.push(b);this.size+=8}
+  writeFloat(v){const b=new Uint8Array(4);new DataView(b.buffer).setFloat32(0,v,true);this.parts.push(b);this.size+=4}
+  writeDouble(v){const b=new Uint8Array(8);new DataView(b.buffer).setFloat64(0,v,true);this.parts.push(b);this.size+=8}
+  writeString(s){
+    const encoded=new TextEncoder().encode(s);
+    this.writeUShort(encoded.length);
+    this.parts.push(encoded);
+    this.size+=encoded.length;
+  }
+  writeTag(tag){
+    switch(tag.type){
+      case TAG.BYTE:this.writeByte(tag.value);break;
+      case TAG.SHORT:this.writeShort(tag.value);break;
+      case TAG.INT:this.writeInt(tag.value);break;
+      case TAG.LONG:this.writeLong(tag.value);break;
+      case TAG.FLOAT:this.writeFloat(tag.value);break;
+      case TAG.DOUBLE:this.writeDouble(tag.value);break;
+      case TAG.BYTE_ARRAY:
+        this.writeInt(tag.value.length);
+        for(const v of tag.value)this.writeByte(v);
+        break;
+      case TAG.STRING:this.writeString(tag.value);break;
+      case TAG.LIST:{
+        const lt=tag.listType||(tag.value.length?tag.value[0].type:TAG.END);
+        this.writeUByte(lt);
+        this.writeInt(tag.value.length);
+        for(const item of tag.value)this.writeTag(item);
+        break;
+      }
+      case TAG.COMPOUND:
+        for(const entry of tag.value){
+          this.writeUByte(entry.type);
+          this.writeString(entry.name);
+          this.writeTag(entry);
+        }
+        this.writeUByte(TAG.END);
+        break;
+      case TAG.INT_ARRAY:
+        this.writeInt(tag.value.length);
+        for(const v of tag.value)this.writeInt(v);
+        break;
+      case TAG.LONG_ARRAY:
+        this.writeInt(tag.value.length);
+        for(const v of tag.value)this.writeLong(v);
+        break;
+    }
+  }
+  writeRoot(root){
+    this.writeUByte(TAG.COMPOUND);
+    this.writeString(root.name||"");
+    this.writeTag(root);
+  }
+  toArrayBuffer(){
+    const result=new Uint8Array(this.size);
+    let offset=0;
+    for(const p of this.parts){result.set(p,offset);offset+=p.length}
+    return result.buffer;
+  }
+}
+
+/* ===== STATE ===== */
+let currentRoot=null;
+let headerVersion=0;
+let fileName="level.dat";
+let addTargetTag=null;
+
+/* ===== DOM REFS ===== */
+const dropZone=document.getElementById("dropZone");
+const fileInput=document.getElementById("fileInput");
+const editorArea=document.getElementById("editorArea");
+const fileInfo=document.getElementById("fileInfo");
+const treeRoot=document.getElementById("treeRoot");
+const bottomBar=document.getElementById("bottomBar");
+const toastContainer=document.getElementById("toastContainer");
+const addTagModal=document.getElementById("addTagModal");
+const contentSections=document.getElementById("contentSections");
+
+/* ===== TOAST ===== */
+function toast(msg,type="info"){
+  const el=document.createElement("div");
+  el.className="toast "+type;
+  el.textContent=msg;
+  toastContainer.appendChild(el);
+  setTimeout(()=>{el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),300)},3000);
+}
+
+/* ===== FILE LOADING ===== */
+function loadFile(file){
+  fileName=file.name;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const buf=e.target.result;
+      if(buf.byteLength<8)throw new Error("File too small to be a valid level.dat");
+      const headerView=new DataView(buf,0,8);
+      headerVersion=headerView.getInt32(0,true);
+      const payloadLen=headerView.getUint32(4,true);
+      const payloadBuf=buf.slice(8);
+      if(payloadBuf.byteLength<payloadLen){
+        console.warn("Payload length in header ("+payloadLen+") > actual ("+payloadBuf.byteLength+"), reading what's available");
+      }
+      const nbtReader=new NBTReader(payloadBuf);
+      currentRoot=nbtReader.parse();
+      showEditor();
+      toast("File loaded successfully","success");
+    }catch(err){
+      console.error(err);
+      toast("Error: "+err.message,"error");
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+/* ===== SHOW/HIDE EDITOR ===== */
+function showEditor(){
+  editorArea.classList.add("visible");
+  bottomBar.classList.add("visible");
+  contentSections.classList.add("hidden");
+  fileInfo.innerHTML='<span class="fname">'+escHtml(fileName)+'</span><span class="fmeta">Version: '+headerVersion+'</span>';
+  renderTree();
+}
+
+function closeEditor(){
+  currentRoot=null;
+  editorArea.classList.remove("visible");
+  bottomBar.classList.remove("visible");
+  contentSections.classList.remove("hidden");
+  treeRoot.innerHTML="";
+  fileInput.value="";
+}
+
+/* ===== RENDER TREE ===== */
+function renderTree(){
+  treeRoot.innerHTML="";
+  if(!currentRoot)return;
+  const node=createTreeNode(currentRoot,null,null);
+  treeRoot.appendChild(node);
+}
+
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+
+function formatValue(tag){
+  switch(tag.type){
+    case TAG.BYTE:return String(tag.value);
+    case TAG.SHORT:return String(tag.value);
+    case TAG.INT:return String(tag.value);
+    case TAG.LONG:return String(tag.value);
+    case TAG.FLOAT:return String(tag.value);
+    case TAG.DOUBLE:return String(tag.value);
+    case TAG.STRING:return'"'+tag.value+'"';
+    case TAG.BYTE_ARRAY:return"["+tag.value.length+" bytes]";
+    case TAG.INT_ARRAY:return"["+tag.value.length+" ints]";
+    case TAG.LONG_ARRAY:return"["+tag.value.length+" longs]";
+    case TAG.LIST:return tag.value.length+" entries";
+    case TAG.COMPOUND:return tag.value.length+" entries";
+    default:return"";
+  }
+}
+
+function isContainer(tag){return tag.type===TAG.COMPOUND||tag.type===TAG.LIST}
+function isArrayTag(tag){return tag.type===TAG.BYTE_ARRAY||tag.type===TAG.INT_ARRAY||tag.type===TAG.LONG_ARRAY}
+function isEditable(tag){return!isContainer(tag)&&!isArrayTag(tag)}
+
+function createTreeNode(tag,parentTag,indexInParent){
+  const wrapper=document.createElement("div");
+  wrapper.className="tree-node";
+
+  const row=document.createElement("div");
+  row.className="node-row";
+
+  /* toggle */
+  const toggle=document.createElement("button");
+  toggle.className="node-toggle"+(isContainer(tag)||isArrayTag(tag)?"":" leaf");
+  toggle.textContent="▶";
+  toggle.setAttribute("aria-label","Toggle");
+  row.appendChild(toggle);
+
+  /* badge */
+  const badge=document.createElement("span");
+  badge.className="tag-badge";
+  badge.dataset.t=tag.type;
+  badge.textContent=TAG_NAMES[tag.type]||"?";
+  row.appendChild(badge);
+
+  /* name */
+  if(tag.name!==undefined&&tag.name!==null){
+    const nameEl=document.createElement("span");
+    nameEl.className="node-name";
+    nameEl.textContent=tag.name;
+    row.appendChild(nameEl);
+  }else if(indexInParent!==null){
+    const nameEl=document.createElement("span");
+    nameEl.className="node-name";
+    nameEl.textContent="["+indexInParent+"]";
+    nameEl.style.color="var(--text2)";
+    row.appendChild(nameEl);
+  }
+
+  /* value */
+  const valEl=document.createElement("span");
+  valEl.className="node-value";
+  valEl.textContent=formatValue(tag);
+  row.appendChild(valEl);
+
+  if(isEditable(tag)){
+    valEl.addEventListener("click",function(e){
+      e.stopPropagation();
+      startEditing(tag,valEl);
+    });
+  }else if(isArrayTag(tag)){
+    valEl.addEventListener("click",function(e){
+      e.stopPropagation();
+      startArrayEditing(tag,valEl);
+    });
+  }
+
+  /* actions */
+  const actions=document.createElement("span");
+  actions.className="node-actions";
+  if(isContainer(tag)){
+    const addBtn=document.createElement("button");
+    addBtn.textContent="+";
+    addBtn.title="Add child tag";
+    addBtn.addEventListener("click",function(e){
+      e.stopPropagation();
+      openAddTagModal(tag);
+    });
+    actions.appendChild(addBtn);
+  }
+  if(parentTag){
+    const delBtn=document.createElement("button");
+    delBtn.className="del";
+    delBtn.textContent="\u00d7";
+    delBtn.title="Remove tag";
+    delBtn.addEventListener("click",function(e){
+      e.stopPropagation();
+      removeTag(parentTag,tag,indexInParent);
+    });
+    actions.appendChild(delBtn);
+  }
+  row.appendChild(actions);
+
+  wrapper.appendChild(row);
+
+  /* children */
+  if(isContainer(tag)||isArrayTag(tag)){
+    const children=document.createElement("div");
+    children.className="node-children";
+    if(isArrayTag(tag)){
+      /* show array entries as editable items */
+      tag.value.forEach(function(val,i){
+        let childType=TAG.BYTE;
+        if(tag.type===TAG.INT_ARRAY)childType=TAG.INT;
+        if(tag.type===TAG.LONG_ARRAY)childType=TAG.LONG;
+        const pseudo={type:childType,value:val,name:null};
+        const childNode=createTreeNode(pseudo,tag,i);
+        children.appendChild(childNode);
+      });
+    }else if(tag.type===TAG.COMPOUND){
+      tag.value.forEach(function(child,i){
+        const childNode=createTreeNode(child,tag,i);
+        children.appendChild(childNode);
+      });
+    }else if(tag.type===TAG.LIST){
+      tag.value.forEach(function(child,i){
+        const childNode=createTreeNode(child,tag,i);
+        children.appendChild(childNode);
+      });
+    }
+    wrapper.appendChild(children);
+
+    let open=false;
+    toggle.addEventListener("click",function(e){
+      e.stopPropagation();
+      open=!open;
+      toggle.textContent=open?"▼":"▶";
+      children.classList.toggle("open",open);
+    });
+    /* auto-open root */
+    if(!parentTag){
+      open=true;
+      toggle.textContent="▼";
+      children.classList.add("open");
+    }
+  }
+
+  return wrapper;
+}
+
+/* ===== INLINE EDITING ===== */
+function startEditing(tag,el){
+  if(el.classList.contains("editing"))return;
+  el.classList.add("editing");
+  const input=document.createElement("input");
+  input.type="text";
+  input.value=tag.type===TAG.STRING?tag.value:String(tag.value);
+  el.textContent="";
+  el.appendChild(input);
+  input.focus();
+  input.select();
+
+  function finish(){
+    el.classList.remove("editing");
+    try{
+      applyValue(tag,input.value);
+    }catch(err){
+      toast("Invalid value: "+err.message,"error");
+    }
+    el.textContent=formatValue(tag);
+  }
+  input.addEventListener("blur",finish);
+  input.addEventListener("keydown",function(e){
+    if(e.key==="Enter"){e.preventDefault();input.blur()}
+    if(e.key==="Escape"){input.value=tag.type===TAG.STRING?tag.value:String(tag.value);input.blur()}
+  });
+}
+
+function startArrayEditing(tag,el){
+  if(el.classList.contains("editing"))return;
+  el.classList.add("editing");
+  const input=document.createElement("input");
+  input.type="text";
+  input.value=tag.value.map(String).join(", ");
+  el.textContent="";
+  el.appendChild(input);
+  input.focus();
+
+  function finish(){
+    el.classList.remove("editing");
+    try{
+      const parts=input.value.split(",").map(s=>s.trim()).filter(s=>s!=="");
+      if(tag.type===TAG.BYTE_ARRAY)tag.value=parts.map(s=>{const n=parseInt(s);if(isNaN(n)||n<-128||n>127)throw new Error("Invalid byte: "+s);return n});
+      else if(tag.type===TAG.INT_ARRAY)tag.value=parts.map(s=>{const n=parseInt(s);if(isNaN(n))throw new Error("Invalid int: "+s);return n});
+      else if(tag.type===TAG.LONG_ARRAY)tag.value=parts.map(s=>BigInt(s));
+    }catch(err){
+      toast("Invalid value: "+err.message,"error");
+    }
+    el.textContent=formatValue(tag);
+  }
+  input.addEventListener("blur",finish);
+  input.addEventListener("keydown",function(e){
+    if(e.key==="Enter"){e.preventDefault();input.blur()}
+    if(e.key==="Escape"){input.value=tag.value.map(String).join(", ");input.blur()}
+  });
+}
+
+function applyValue(tag,str){
+  switch(tag.type){
+    case TAG.BYTE:{const n=parseInt(str);if(isNaN(n)||n<-128||n>127)throw new Error("Byte must be -128..127");tag.value=n;break}
+    case TAG.SHORT:{const n=parseInt(str);if(isNaN(n)||n<-32768||n>32767)throw new Error("Short must be -32768..32767");tag.value=n;break}
+    case TAG.INT:{const n=parseInt(str);if(isNaN(n))throw new Error("Invalid integer");tag.value=n;break}
+    case TAG.LONG:tag.value=BigInt(str);break;
+    case TAG.FLOAT:{const n=parseFloat(str);if(isNaN(n))throw new Error("Invalid float");tag.value=n;break}
+    case TAG.DOUBLE:{const n=parseFloat(str);if(isNaN(n))throw new Error("Invalid double");tag.value=n;break}
+    case TAG.STRING:tag.value=str;break;
+    default:throw new Error("Cannot edit this tag type inline");
+  }
+}
+
+/* ===== ADD/REMOVE TAGS ===== */
+function removeTag(parentTag,childTag,index){
+  if(parentTag.type===TAG.COMPOUND){
+    parentTag.value.splice(index,1);
+  }else if(parentTag.type===TAG.LIST){
+    parentTag.value.splice(index,1);
+  }else if(isArrayTag(parentTag)){
+    parentTag.value.splice(index,1);
+  }
+  renderTree();
+  toast("Tag removed","info");
+}
+
+function openAddTagModal(parentTag){
+  addTargetTag=parentTag;
+  const nameInput=document.getElementById("newTagName");
+  const typeSelect=document.getElementById("newTagType");
+  const valueInput=document.getElementById("newTagValue");
+  const listRow=document.getElementById("listSubtypeRow");
+  nameInput.value="";
+  valueInput.value="";
+  if(parentTag.type===TAG.LIST){
+    nameInput.style.display="none";
+    nameInput.previousElementSibling.style.display="none";
+    /* lock type to list's type */
+    typeSelect.value=parentTag.listType||TAG.BYTE;
+    typeSelect.disabled=true;
+  }else{
+    nameInput.style.display="";
+    nameInput.previousElementSibling.style.display="";
+    typeSelect.disabled=false;
+    typeSelect.value=TAG.STRING;
+  }
+  listRow.style.display=(parseInt(typeSelect.value)===TAG.LIST)?"block":"none";
+  addTagModal.classList.add("visible");
+}
+
+document.getElementById("newTagType").addEventListener("change",function(){
+  document.getElementById("listSubtypeRow").style.display=(parseInt(this.value)===TAG.LIST)?"block":"none";
+});
+
+document.getElementById("addTagCancel").addEventListener("click",function(){
+  addTagModal.classList.remove("visible");
+  addTargetTag=null;
+});
+
+document.getElementById("addTagConfirm").addEventListener("click",function(){
+  if(!addTargetTag)return;
+  const nameInput=document.getElementById("newTagName");
+  const typeVal=parseInt(document.getElementById("newTagType").value);
+  const valueStr=document.getElementById("newTagValue").value;
+  const listSubtype=parseInt(document.getElementById("newListSubtype").value);
+
+  try{
+    const newTag=createDefaultTag(typeVal,valueStr,listSubtype);
+    if(addTargetTag.type===TAG.COMPOUND){
+      const name=nameInput.value.trim();
+      if(!name)throw new Error("Tag name is required");
+      newTag.name=name;
+      addTargetTag.value.push(newTag);
+    }else if(addTargetTag.type===TAG.LIST){
+      addTargetTag.value.push(newTag);
+    }
+    addTagModal.classList.remove("visible");
+    addTargetTag=null;
+    renderTree();
+    toast("Tag added","success");
+  }catch(err){
+    toast("Error: "+err.message,"error");
+  }
+});
+
+function createDefaultTag(type,valueStr,listSubtype){
+  switch(type){
+    case TAG.BYTE:return{type,value:valueStr?parseInt(valueStr):0};
+    case TAG.SHORT:return{type,value:valueStr?parseInt(valueStr):0};
+    case TAG.INT:return{type,value:valueStr?parseInt(valueStr):0};
+    case TAG.LONG:return{type,value:valueStr?BigInt(valueStr||"0"):0n};
+    case TAG.FLOAT:return{type,value:valueStr?parseFloat(valueStr):0.0};
+    case TAG.DOUBLE:return{type,value:valueStr?parseFloat(valueStr):0.0};
+    case TAG.STRING:return{type,value:valueStr||""};
+    case TAG.BYTE_ARRAY:return{type,value:valueStr?valueStr.split(",").map(s=>parseInt(s.trim())):[]};
+    case TAG.INT_ARRAY:return{type,value:valueStr?valueStr.split(",").map(s=>parseInt(s.trim())):[]};
+    case TAG.LONG_ARRAY:return{type,value:valueStr?valueStr.split(",").map(s=>BigInt(s.trim())):[]};
+    case TAG.LIST:return{type,listType:listSubtype||TAG.BYTE,value:[]};
+    case TAG.COMPOUND:return{type,value:[]};
+    default:throw new Error("Unknown tag type");
+  }
+}
+
+/* ===== SAVE ===== */
+function saveFile(){
+  if(!currentRoot){toast("No file loaded","error");return}
+  try{
+    const writer=new NBTWriter();
+    writer.writeRoot(currentRoot);
+    const nbtBuf=writer.toArrayBuffer();
+    const nbtBytes=new Uint8Array(nbtBuf);
+    /* build full file: 8-byte header + NBT */
+    const full=new Uint8Array(8+nbtBytes.length);
+    const headerView=new DataView(full.buffer);
+    headerView.setInt32(0,headerVersion,true);
+    headerView.setUint32(4,nbtBytes.length,true);
+    full.set(nbtBytes,8);
+    /* download */
+    const blob=new Blob([full],{type:"application/octet-stream"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast("File saved: "+fileName,"success");
+  }catch(err){
+    console.error(err);
+    toast("Save error: "+err.message,"error");
+  }
+}
+
+/* ===== EVENT HANDLERS ===== */
+/* Drop zone */
+dropZone.addEventListener("dragover",function(e){e.preventDefault();dropZone.classList.add("active")});
+dropZone.addEventListener("dragleave",function(){dropZone.classList.remove("active")});
+dropZone.addEventListener("drop",function(e){
+  e.preventDefault();dropZone.classList.remove("active");
+  if(e.dataTransfer.files.length)loadFile(e.dataTransfer.files[0]);
+});
+dropZone.addEventListener("click",function(e){
+  if(e.target.tagName==="BUTTON")return;
+  fileInput.click();
+});
+dropZone.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" ")fileInput.click()});
+fileInput.addEventListener("change",function(){if(fileInput.files.length)loadFile(fileInput.files[0])});
+
+/* Bottom bar */
+document.getElementById("btnSave").addEventListener("click",saveFile);
+document.getElementById("btnCloseFile").addEventListener("click",closeEditor);
+document.getElementById("btnAddRoot").addEventListener("click",function(){
+  if(currentRoot)openAddTagModal(currentRoot);
+});
+
+/* Close modal on overlay click */
+addTagModal.addEventListener("click",function(e){
+  if(e.target===addTagModal){addTagModal.classList.remove("visible");addTargetTag=null}
+});
+
+})();
+</script>
+</body>
+</html>
